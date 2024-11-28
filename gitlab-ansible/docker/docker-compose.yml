@@ -1,0 +1,43 @@
+version: '3.8'
+
+services:
+  postgres:
+    image: postgres:15
+    environment:
+      POSTGRES_DB: all
+      POSTGRES_USER: admin
+      POSTGRES_PASSWORD: admin 
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    networks:
+      - gitlab-net
+
+  gitlab:
+    image: gitlab/gitlab-ce:latest
+    environment:
+      GITLAB_ROOT_PASSWORD: 't3m4@mdp2k24@@!heykro7m'
+      GITLAB_OMNIBUS_CONFIG: |
+        external_url 'http://localhost:8080'
+        gitlab_rails['db_adapter'] = 'postgresql'
+        gitlab_rails['db_encoding'] = 'unicode'
+        gitlab_rails['db_database'] = 'all'
+        gitlab_rails['db_username'] = 'admin'
+        gitlab_rails['db_password'] = 'admin'
+        gitlab_rails['db_host'] = 'postgres'
+    ports:
+      - "8080:8080"
+      - "8443:443"
+      - "2200:22"
+    networks:
+      - gitlab-net
+    depends_on:
+      - postgres
+    volumes:
+      - gitlab_data:/var/opt/gitlab
+
+volumes:
+  postgres_data:
+  gitlab_data:
+
+networks:
+  gitlab-net:

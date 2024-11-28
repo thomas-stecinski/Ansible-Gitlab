@@ -1,0 +1,22 @@
+- name: Install Docker and Docker Compose
+  apt:
+    name:
+      - docker.io
+      - docker-compose
+    state: present
+    update_cache: yes
+
+- name: Create directory for docker-compose.yml
+  file:
+    path: /opt/docker
+    state: directory
+
+- name: Copy docker-compose.yml
+  copy:
+    src: "{{ playbook_dir }}/docker/docker-compose.yml"
+    dest: /opt/docker/docker-compose.yml
+
+- name: Deploy services with Docker Compose
+  shell: docker-compose up -d
+  args:
+    chdir: /opt/docker

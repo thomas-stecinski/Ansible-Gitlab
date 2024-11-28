@@ -1,0 +1,9 @@
+- name: Stop all services
+  hosts: gitlab
+  become: yes
+  tasks:
+    - name: Stop GitLab service
+      command: gitlab-ctl stop
+
+    - name: Stop PostgreSQL service
+      command: systemctl stop postgresql

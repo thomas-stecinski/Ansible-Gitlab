@@ -1,0 +1,53 @@
+- name: Install PostgreSQL
+  apt:
+    name: postgresql
+    state: present
+    update_cache: yes
+
+- name: Ensure PostgreSQL service is running
+  service:
+    name: postgresql
+    state: started
+    enabled: yes
+
+- name: Create databases
+  postgresql_db:
+    name: "{{ item }}"
+    owner: vagrant
+    state: present
+    login_user: postgres
+    login_password: admin
+  loop:
+    - all
+    - dev
+    - stage
+    - prod
+
+- name: Create user for PostgreSQL
+  postgresql_user:
+    name: vagrant
+    password: admin
+    role_attr_flags: LOGIN
+    state: present
+    login_user: postgres
+    login_password: admin
+
+- name: Grant privileges to user 'vagrant' on database 'all'
+  postgresql_query:
+    query: "GRANT ALL PRIVILEGES ON DATABASE \"all\" TO vagrant;"
+    login_user: postgres
+    login_password: admin
+
+- name: Update pg_hba.conf for external connections
+  replace:
+    path: /etc/postgresql/13/main/pg_hba.conf
+    regexp: "{{ item.regex }}"
+    replace: "{{ item.replace }}"
+  loop:
+    - { regex: '^host.*127\\.0\\.0\\.1/32.*$', replace: 'host    all             all             0.0.0.0/0            md5' }
+    - { regex: '^local.*all.*peer$', replace: 'local   all             all                                     trust' }
+
+- name: Restart PostgreSQL to apply changes
+  service:
+    name: postgresql
+    state: restarted
