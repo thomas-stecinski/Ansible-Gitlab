@@ -5,7 +5,7 @@ Ce projet configure une infrastructure automatisée avec une base de données Po
 ---
 
 ## Structure du Projet
-
+```bash
 .
 ├── docker
 │   └── docker-compose.yml
@@ -23,7 +23,7 @@ Ce projet configure une infrastructure automatisée avec une base de données Po
 │           └── main.yml
 ├── site.yml
 └── stop_services.yml
-
+```
 
 ---
 ## Configuration
